@@ -1,0 +1,14 @@
+#define PROCESSING_TEXTURE_SHADER
+
+// properties set by processing:
+uniform sampler2D texture;
+uniform vec2 texOffset;
+varying vec4 vertTexCoord;
+varying vec4 vertColor;
+
+// custom properties:
+uniform sampler2D otherImage;
+
+void main() {
+
+}
