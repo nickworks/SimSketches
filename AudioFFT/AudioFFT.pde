@@ -14,7 +14,6 @@ void setup() {
   player = minim.loadFile("bb.mp3", 2048);
   player.play();
   fft = new FFT(player.bufferSize(), player.sampleRate());
-  //shader = loadShader("example3.glsl");
 }
 
 void draw() {
