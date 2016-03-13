@@ -1,20 +1,17 @@
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
+import ddf.minim.ugens.*;
 
 Minim minim;
 AudioPlayer player;
 FFT fft;
-IIRFilter filter;
-//PShader shader;
 
 void setup() {
   size(1024, 512);
   stroke(255);
   minim = new Minim(this);
   player = minim.loadFile("bb.mp3", 2048);
-  filter = new LowPassSP(1024, player.sampleRate());
-  player.addEffect(filter);
   player.play();
   fft = new FFT(player.bufferSize(), player.sampleRate());
   //shader = loadShader("example3.glsl");
@@ -25,10 +22,7 @@ void draw() {
   // USE OVERALL VOLUME TO CONTROL BACKGROUND COLOR:
   float red = 255 * player.mix.level();
   background(red, 0, 0);
-  
-  // USE MOUSE TO CONTROL
-  filter.setFreq(map(mouseY, 0, height, 2000, 0));
-  
+
   // DRAW FFT BANDS:
   fft.forward(player.mix);
   for(int i = 0; i < fft.specSize(); i++){
