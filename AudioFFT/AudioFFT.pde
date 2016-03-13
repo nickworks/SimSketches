@@ -10,6 +10,7 @@ IIRFilter filter;
 
 void setup() {
   size(1024, 512);
+  stroke(255);
   minim = new Minim(this);
   player = minim.loadFile("bb.mp3", 2048);
   filter = new LowPassSP(1024, player.sampleRate());
@@ -21,28 +22,26 @@ void setup() {
 
 void draw() {
 
+  // USE OVERALL VOLUME TO CONTROL BACKGROUND COLOR:
   float red = 255 * player.mix.level();
   background(red, 0, 0);
-  //shader.set("rotateAmount", .1f * player.mix.level());
-  //filter(shader);
   
-  
-  stroke(255);
+  // USE MOUSE TO CONTROL
   filter.setFreq(map(mouseY, 0, height, 2000, 0));
   
-  // DRAW FFT:
+  // DRAW FFT BANDS:
   fft.forward(player.mix);
   for(int i = 0; i < fft.specSize(); i++){
     line(i, 200, i, 200 - fft.getBand(i) * 4);
   }
   
+  // DRAW FFT BANDS (ZOOM IN WITH MOUSE):
   float spread = map(mouseX, 0, width, 1, 21.5);
   float x = 0;
   for(int i = 0; i < player.sampleRate() && x <= width; i += spread){
     x = i/spread;
     line(x, 200, x, 200 + fft.getFreq(i) * 4);
   }
-  
   
   // DRAW WAVE FORM:
   for(int i = 0; i < player.bufferSize() - 1 && i < width; i++){
@@ -52,4 +51,3 @@ void draw() {
   }
   
 }
-

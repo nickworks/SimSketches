@@ -23,6 +23,8 @@ void draw() {
   fill(255);
   noStroke();
   text("Number of waves:" + waves.size(), 20, 20);
+  text("q : remove a wave", 20, 40);
+  text("w : add a wave", 20, 60);
   noFill();
 
   ArrayList<PVector> points1 = new ArrayList<PVector>(); // mathematical result of wave addition
@@ -53,12 +55,13 @@ float getYForAmp(float amp){
   return amp * 70 + 200;
 }
 void keyPressed() {
-  if (keyCode == 93) {
+  println(keyCode);
+  if (keyCode == 87) {
     float period = random(0, 1024);
     float amplitude = random(0, .3);
     waves.add(new Wave(period, amplitude));
   }
-  if (keyCode == 91) {
+  if (keyCode == 81) {
     if (waves.size() > 1) {
       Wave w = waves.get(waves.size() - 1);
       waves.remove(w);
@@ -94,4 +97,3 @@ class Wave {
     sw.setAmp(amplitude);
   }
 }
-
