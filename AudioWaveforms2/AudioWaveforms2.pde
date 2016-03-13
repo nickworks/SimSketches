@@ -4,8 +4,6 @@ import ddf.minim.effects.*;
 
 Minim minim;
 AudioPlayer player;
-IIRFilter filter;
-
 int hue = 0;
 int sampleSize = 2048;
 int scale = 20;
@@ -15,8 +13,6 @@ void setup() {
   size(2048, 400);
   minim = new Minim(this);
   player = minim.loadFile("song.mp3", sampleSize);
-  filter = new LowPassSP(60, player.sampleRate());
-  player.addEffect(filter);
   player.play();
 
   yValuesPrev = new float[sampleSize];
@@ -27,9 +23,7 @@ void setup() {
 
 void draw() {
   background(0);
-
-  filter.setFreq(map(mouseY, 0, height, 2000, 0));
-
+  
   hue += 2;
   while (hue >= 360) hue -= 360;
   stroke(hue, 255, 255);
@@ -58,4 +52,3 @@ void draw() {
   }
   endShape();
 }
-
