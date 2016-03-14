@@ -1,87 +1,93 @@
+/*
+Copyright Nick Pattison 2015, 2016
+This sketch is a fun, interactive music visualizer!
+While the music is playing, wiggle the mouse around the screen to affect the rotation and scale of the pattern of dots.
+Use the LEFT and RIGHT arrows to adjust how fast the dots are spinning. Have fun!
+*/
 
-boolean manualMode = true;
-ArrayList<Vector> points = new ArrayList<Vector>();
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+
+boolean manualMode = false;
+ArrayList<PVector> points = new ArrayList<PVector>();
 float scale = 1;
 float angle = 0;
-float intensity = 0;
-color drawColor;
 int hue = 0;
 float speed = 1;
 float time;
-float scatter = 0;
+float level = 0;
+
+AudioPlayer player;
 
 void setup() {
-  size(800, 500);
-
-  points.add(new Vector(-10, -10));
-  points.add(new Vector(30, -10));
-
-  points.add(new Vector(30, 30));
-  points.add(new Vector(-10, 30));
-
-  points.add(new Vector(0, 0));
-  points.add(new Vector(10, 0));
-  points.add(new Vector(20, 0));
-  points.add(new Vector(20, 10));
-  points.add(new Vector(20, 20));
-  points.add(new Vector(10, 20));
-  points.add(new Vector(0, 20));
-  points.add(new Vector(0, 10));
+  size(600, 600);
+  
+  Minim minim = new Minim(this);
+  player = minim.loadFile("song.mp3", 1024);
+  player.play();
+  
+  colorMode(HSB);
+  noStroke();
+ 
+  makePoints(); 
+}
+void makePoints(){
+  float m = 15;
+  float s = 6;
+  
+  for(int i = 0; i < s; i ++){
+    float a = TWO_PI * i / s;
+    float x = m * cos(a);
+    float y = m * sin(a);
+    points.add(new PVector(x, y));
+    points.add(new PVector(x * 2, y * 2)); 
+  }
 }
 
 void draw() {
-  fill(255, 255, 255, 10);
-  rect(0, 0, width, height);
-
+  
+  ///////////////////// UPDATE:
+  
+  if(Keys.isDown(Keys.LEFT)) speed -= .1;
+  if(Keys.isDown(Keys.RIGHT)) speed += .1;
+  
+  
+  level = smoothSignal(player.mix.level(), level, 20);
   time += (0.01 * speed);
-  if(Input.S || mousePressed) speed *= .95;
-  float newScale = 10.0 * mouseY / height * (7 + 5 * sin(time));
-  float newAngle = mouseX / 100.0 + time;
+  float newScale = (map(mouseY, 0, height, 0, 5) * map(sin(millis()/1000.0), -1, 1, 3, 10) + 20 * player.mix.level()) * (level) * (2 + player.mix.level());
+  float newAngle = mouseX / 100.0 + time;// + player.mix.level();
 
-  intensity = 10 + (int)((scale - newScale) * 20);
+  float intensity = 10 + (int)((scale - newScale) * 20) + player.mix.level() * player.mix.level() * 200;
+  float jitter = 0;
+  scale = smoothSignal(newScale, scale, 2);
+  angle = jitter * random(PI) + newAngle;
+  if(jitter > 0) jitter *= .9;
+  if(jitter < 0) jitter = 0;
   
-  if (Input.N4) intensity *= 4;
-  if (Input.N3) intensity *= 4;
-  if (Input.N2) intensity *= 4;
-  if (Input.N1) intensity *= 2;
-
-  scale = (scale + newScale) / 2;
-  if(Input.SPACE) scatter = 1;
-  angle = scatter * random(PI) + newAngle;//(angle + newAngle) / 2;
-  if(scatter > 0) scatter *= .5;
-  if(scatter < 0) scatter = 0;
-  
-
-  colorMode(HSB);
   hue += 1;
   while (hue > 255) hue -= 255;
-  drawColor = color(hue, 255, intensity * intensity);
-  colorMode(RGB);
+  color drawColor = color(hue, 255, intensity * intensity);
 
-  Matrix m = new Matrix(); // build matrix object
-  m.translate(-10, -10);
-  m.scale(scale, scale);
-  m.rotate(angle);
-  m.translate(400, 250);
-
-  for (Vector v : points) { // for every point...
-    Vector t = m.transform(v); // transforms point V into point T
-    t.drawPoint(); // draw point T
+  PMatrix2D matrix = new PMatrix2D();
+  matrix.translate(width/2, height/2);
+  matrix.rotate(angle);
+  matrix.scale(scale);
+  
+  Keys.update();
+  
+  ///////////////////// DRAW:
+  
+  fill(255, 0, 255, 10);
+  rect(0, 0, width, height);
+  
+  for (PVector v : points) { // for every point...
+    fill(drawColor);
+    PVector t = new PVector();
+    matrix.mult(v, t);
+    ellipse(t.x, t.y, intensity, intensity);
   }
-  /*
-  fill(255);
-   rect(0, 0, width, 30);
-   fill(0);
-   text("manual mode : " + (manualMode ? "on" : "off"), 10, 20);
-   */
+  
 }
-
-void mousePressed() {
-  manualMode = !manualMode;
+float smoothSignal(float newValue, float oldValue, int oldWeight){
+    return (newValue + oldValue * oldWeight) / (oldWeight + 1);
 }
-void mouseWheel(MouseEvent event) {
-  float e = event.getCount();
-  speed += e/2.0;
-  println(speed);
-}
-
