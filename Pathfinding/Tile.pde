@@ -1,6 +1,6 @@
 static class TileHelper {
 
-  static PathfindingDemo3 app;
+  static Pathfinding app;
   static boolean isHex = true;
   final static int W = 32;
   final static int H = 32;
@@ -119,4 +119,3 @@ class Tile {
     return sqrt(dx * dx + dy * dy);
   }
 }
-
