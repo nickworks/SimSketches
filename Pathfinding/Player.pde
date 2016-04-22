@@ -1,13 +1,13 @@
 class Player {
 
   // GRID-SPACE COORDINATES:
-  Point gridP = new Point();
-  Point gridT = new Point();
+  Point gridP = new Point(); // current position
+  Point gridT = new Point(); // target position (pathfinding goal)
 
   // PIXEL-SPACE COORDINATES:
-  PVector pixlP = new PVector(); // CURRENT POSITION
+  PVector pixlP = new PVector(); // current pixel position
 
-  ArrayList<Tile> path;
+  ArrayList<Tile> path;    // the path to follow to get to the target position
   boolean findPath = false;
 
   Player() {
@@ -78,4 +78,3 @@ class Player {
     }
   }
 }
-

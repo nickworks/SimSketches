@@ -63,4 +63,3 @@ void keyPressed() {
   if (keyCode == 72) pathfinder.toggleHeuristic();
   if (keyCode == 192) debug = !debug;
 }
-

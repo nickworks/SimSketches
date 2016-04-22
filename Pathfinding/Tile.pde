@@ -74,7 +74,7 @@ class Tile {
 
   ArrayList<Tile> neighbors = new ArrayList<Tile>(); // LIST OF NEIGHBORING TILES
   Tile parent; // PARENT TILE (previous tile in the path)
-  float G; // COST TO TRAVEL TO THIS TILE 
+  float G; // COST TO TRAVEL TO THIS TILE... from origin!
   float F; // TOTAL COST OF THIS TILE
 
   // ADD THE SUPPLIED TILES TO THIS TILE'S LIST OF NEIGHBORS:
